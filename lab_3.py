@@ -62,12 +62,14 @@ def phase_algorithm(sites, iniID : str):
             siteQueue = chain(iter([find_by_id(sites, outID) for outID in prevSite.out]), siteQueue)
             prevSite.sent += 1
         site = next(siteQueue)
+        if prevSite.check_if_decided():
+            print('Site #%s decided!\n' % prevSite.ID)
+            break
         if len(site.rec) == 1:
             site.rec[list(site.rec.keys())[0]] += 1
         else:
             site.rec[prevSite.ID] += 1
-        if site.check_if_decided():
-            break
+
         prevSite = site
 
 
