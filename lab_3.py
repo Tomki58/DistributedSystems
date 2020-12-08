@@ -1,3 +1,5 @@
+from itertools import chain
+
 # graph = {'0': {'in': ['5'], 'out': ['1']}, '1': {'in': ['0'], 'out': ['2']}, '2': {'in': ['1'], 'out': ['3']},
 #          '3': {'in': ['2'], 'out': ['4', '5']}, '4': {'in': ['3'], 'out': ['5']}, '5': {'in': ['3', '4'], 'out': ['0']}}
 
@@ -26,6 +28,14 @@ class Site:
     def check_if_decided(self):
         return True if max(self.rec.values()) == D and self.sent == D else False
 
+    def check_if_expandable(self):
+        if self.get_min_rec() >= self.sent and self.sent < D:
+            return True
+        else:
+            return False
+
+    def __str__(self):
+        return 'Rec = %s\n' % self.rec + 'Self = %d\n' % self.sent
 
 def parse_graph(graph: dict):
 
@@ -45,20 +55,24 @@ def find_by_id(sites, ID):
 def phase_algorithm(sites, iniID : str):
     iniSite = find_by_id(sites, iniID)
     siteQueue = iter([iniSite])
-    firstStep = True
+    prevSite = next(siteQueue)
     while True:
-        # TODO: Доделать алгоритм через генераторы
-        prevSite = siteQueue.pop()
-        prevSite.sent += 1
-        siteQueue = iter([find_by_id(sites, outID) for outID in prevSite.out] + siteQueue)
-        if firstStep:
-            firstStep = False
+        # siteQueue = iter([find_by_id(sites, outID) for outID in prevSite.out] + siteQueue)
+        if prevSite.check_if_expandable():
+            siteQueue = chain(iter([find_by_id(sites, outID) for outID in prevSite.out]), siteQueue)
+            prevSite.sent += 1
+        site = next(siteQueue)
+        if len(site.rec) == 1:
+            site.rec[list(site.rec.keys())[0]] += 1
         else:
             site.rec[prevSite.ID] += 1
         if site.check_if_decided():
             break
+        prevSite = site
 
 
 if __name__ == "__main__":
     sites = parse_graph(graph)
     phase_algorithm(sites, '1')
+    for site in sites:
+        print(str(site))
