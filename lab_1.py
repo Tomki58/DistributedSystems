@@ -3,19 +3,14 @@ graph = {	'A': ['B', 'C'], 'B': ['A', 'C'], 'C': ['G', 'H'],
 			'G': ['F', 'C'], 'H': ['C']	
 		}
 
-
-# graph = { 'A': ['B', 'C'], 'B': ['A', 'C', 'D'], 'C': ['A', 'B'], 'D': ['B']}
-
-# graph = 
-
 class Graph:
 
 	def __init__(self, graphDict : dict):
 		self.nodes = [Node(name) for name in graphDict.keys()]
 		for node in self.nodes:
-			node.out = self.find_by_ID_v2(*graphDict[node.ID])
+			node.out = self.find_by_ID(*graphDict[node.ID])
 
-	def find_by_ID_v2(self, *args):
+	def find_by_ID(self, *args):
 		if len(args) != 0:
 			nodesList = []
 			for name in args:
@@ -23,14 +18,12 @@ class Graph:
 			return nodesList
 
 	def card(self, nodeId):
-		node = self.find_by_ID_v2(nodeId)[0]
+		node = self.find_by_ID(nodeId)[0]
 		return len(node.out)
 
 	def recieve_token(self, node, preNode):
 		node.pre = preNode if node.pre is None else node.pre
 		node.counter += 1
-		# for neigh in [outNode for outNode in node.out if outNode != node.pre]:
-		# 	self.recieve_token(neigh, node)
 		
 		if node.counter == self.card(node.ID):
 			if node.pre is None:
@@ -44,7 +37,7 @@ class Graph:
 			self.recieve_token(neigh, node)
 
 	def echo_algorithm(self, iniNodeId : str):
-		iniNode = self.find_by_ID_v2(iniNodeId)[0]
+		iniNode = self.find_by_ID(iniNodeId)[0]
 		nodeQueue = [iniNode]
 		for node in nodeQueue:
 			if iniNode.counter != self.card(iniNode.ID):
@@ -74,10 +67,7 @@ def parse_graph(graph : dict):
 
 
 if __name__ == "__main__":
-	# echo_algorithm(graph, 0)
 	fooGraph = Graph(graph)
-	# for item in fooGraph.nodes:
-	# 	print(item)
 	fooGraph.echo_algorithm('A')
 	for node in fooGraph.nodes:
 		print(node)
