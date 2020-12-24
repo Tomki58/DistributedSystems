@@ -61,7 +61,6 @@ def finn_algorithm(sites, init_site_id: str):
     site_queue = iter([init_site])
     current_site = next(site_queue)
     while True:
-        # TODO: Сделать заполнение очереди через изменение сайта
         current_site.check_neighbours()
         site_queue = chain(
             iter(
